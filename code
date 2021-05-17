@@ -1,0 +1,42 @@
+import smbus
+import time
+
+DEVICE = 0x23 # Default device I2C address
+ONE_TIME_HIGH_RES_MODE_1 = 0x20
+
+
+
+bus = smbus.SMBus(1)  
+
+def convertToNumber(data):
+  result=(data[1] + (256 * data[0])) / 1.2
+  return (result)
+
+def readLight(address=DEVICE):
+  # Read data from I2C interface
+  data = bus.read_i2c_block_data(address,ONE_TIME_HIGH_RES_MODE_1)
+  return convertToNumber(data)
+
+def main():
+
+  while True:
+    lux=readLight()
+    if lux < 20:
+        x = "Too Dark"
+        print("Lux : " + format(lux,'.2f') + " lx " + x)
+    elif  lux> 20 and lux < 100:
+        x = "Dark"
+        print("Lux : " + format(lux,'.2f') + " lx " + x)
+    elif lux> 100 and lux < 600:
+        x = "Medium"
+        print("Lux : " + format(lux,'.2f') + " lx " + x)
+    elif lux> 600 and lux < 1000:
+        x = "Bright"
+        print("Lux : " + format(lux,'.2f') + " lx " + x)
+    elif lux > 1000:
+        x = "Too Bright"
+        print("Lux : " + format(lux,'.2f') + " lx " + x)
+    time.sleep(0.5)
+
+if __name__=="__main__":
+   main()
